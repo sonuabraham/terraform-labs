@@ -16,30 +16,29 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
 provider "aws" {
-  profile                 = "default"
-  region                  = "${local.env_vars.region}"
-  shared_credentials_file = "/home/sonu/.aws/credentials"
+  profile = "default"
+  region  = "${local.env_vars.region}"
+}
+EOF
 }
 
-data "aws_ami" "latest" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+generate "versions" {
+  path      = "versions.tf"
+  if_exists = "overwrite"
+  contents  = <<EOF
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
 }
 EOF
 }
 
 inputs = {
-  ami           = "data.aws_ami.latest.id"
+  ami           = "ami-04246dd1e4b4e93c7"  # Amazon Linux 2 AMI in us-west-1
   instance_type = local.shared_vars.instance_type
   tags = {
     Name = "Terragrunt Tutorial EC2"
