@@ -1,21 +1,25 @@
+
 variable "instance_type" {
-  type = string
+  default = "t2.micro"
+}
+data "aws_ami" "selected" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*"]
+  }
 }
 
 resource "aws_instance" "web" {
-  ami           = "ami-0f3caa1cf4417e51b"
+  ami           = data.aws_ami.selected.id
   instance_type = var.instance_type
-
-  timeouts {
-    create = "15m"
-    update = "5m"
-    delete = "20m"
-  }
 
   lifecycle {
     precondition {
-      condition     = can(regex("^t2\\.", var.instance_type))
-      error_message = "Only t2 instance types are allowed."
+      condition     = data.aws_ami.selected.architecture == "x86_64"
+      error_message = "AMI must be x86_64 architecture"
     }
   }
 }
