@@ -1,5 +1,19 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.100.0"
+    }
 
-module "ec2-instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 5.7"
+  }
 }
+
+resource "aws_instance" "instance" {
+  ami           = var.ami
+  instance_type = var.instance_type
+}
+
+variable "ami" {}
+variable "instance_type" {}
+
+
