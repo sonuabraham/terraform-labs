@@ -16,4 +16,8 @@ resource "aws_instance" "instance" {
 variable "ami" {}
 variable "instance_type" {}
 
+output "instance_id" {
+  value = aws_instance.instance.id
+}
+
 
